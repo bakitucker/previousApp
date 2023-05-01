@@ -5,8 +5,8 @@ const MongoClient = require('mongodb').MongoClient
 
 var db, collection;
 
-const url = "mongodb+srv://bakitucker8:VIwTdREZ9k0yLJIC@bakitucker1.gvx0z4s.mongodb.net/?retryWrites=true&w=majority";
-const dbName = "personalOne";
+const url = "mongodb+srv://bakitucker8:baki123@previousapp.msj0cu4.mongodb.net/?retryWrites=true&w=majority";
+const dbName = "previousApp";
 
 app.listen(1010, () => {
     MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
@@ -24,39 +24,25 @@ app.use(bodyParser.json())
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-  db.collection('addresses').find().toArray((err, result) => {
+  db.collection('words').find().toArray((err, result) => {
     if (err) return console.log(err)
     res.render('index.ejs', {messages: result})
   })
 })
 
-app.post('/messages', (req, res) => {
-  db.collection('addresses').insertOne({name: req.body.name, number: req.body.number, makeFav:"",address: req.body.address, email: req.body.email}, (err, result) => {
+app.post('/words', (req, res) => {
+  let checkTheP = req.body.word === req.body.word.split("").reverse().join("") ? "It is a palindrome!" : "I'm sorry. It is not a palindrome!"
+  db.collection('words').insertOne({word: req.body.word, checkP:checkTheP, }, (err, result) => {
     if (err) return console.log(err)
     console.log('saved to database')
     res.redirect('/')
   })
 })
 
-app.put('/addresses', (req, res) => {
-  db.collection('addresses')
-  .findOneAndUpdate({name: req.body.name, number: req.body.number}, {
+app.put('/words', (req, res) => {
+  db.collection('words')
+  .findOneAndUpdate({word: req.body.word}, {
     $set: {
-      makeFav:'★★'
-    }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, result) => {
-    if (err) return res.send(err)
-    res.send(result)
-  })
-})
-app.put('/addresses/unFav', (req, res) => {
-  db.collection('addresses')
-  .findOneAndUpdate({name: req.body.name, number: req.body.number}, {
-    $set: {
-      makeFav:''
     }
   }, {
     sort: {_id: -1},
@@ -70,8 +56,8 @@ app.put('/addresses/unFav', (req, res) => {
 
 
 
-app.delete('/addresses', (req, res) => {
-  db.collection('addresses').findOneAndDelete({name: req.body.name, number: req.body.number}, (err, result) => {
+app.delete('/words', (req, res) => {
+  db.collection('words').findOneAndDelete({word: req.body.word}, (err, result) => {
     
     if (err) return res.send(500, err)
 
